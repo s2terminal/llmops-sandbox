@@ -4,12 +4,24 @@ services:
     volumes:
       - .:/app
       - mlruns:/app/mlruns
+      - mlartifacts:/app/mlartifacts
     env_file:
       - .env
+    environment:
+      - MLFLOW_DEPLOYMENTS_TARGET=http://mlflow-deployments:7000
     ports:
       - 5000:5000
-    command: mlflow ui --workers 1 --host 0.0.0.0 --port 5000
+    command: poetry run mlflow ui --workers 1 --host 0.0.0.0 --port 5000
+  mlflow-deployments:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - type: bind
+        source: ./mlflow_deployments.yaml
+        target: /app/mlflow_deployments.yaml
+    command: poetry run mlflow deployments start-server --config-path mlflow_deployments.yaml --workers 1 --port 7000 --host 0.0.0.0
 
 volumes:
   mlruns:
-
+  mlartifacts:
