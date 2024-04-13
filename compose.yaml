@@ -3,6 +3,13 @@ services:
     build: .
     volumes:
       - .:/app
+      - mlruns:/app/mlruns
     env_file:
       - .env
-    command: poetry run jupyter lab --no-browser --ip=0.0.0.0 --port=8888 --allow-root --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.disable_check_xsrf=True
+    ports:
+      - 5000:5000
+    command: mlflow ui --workers 1 --host 0.0.0.0 --port 5000
+
+volumes:
+  mlruns:
+
